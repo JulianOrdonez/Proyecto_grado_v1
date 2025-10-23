@@ -1,0 +1,15 @@
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+# Proyecto UCEVA - App Flutter
+# Este archivo define las dependencias y configuración inicial de la app.
+name: uceva_iot_app
+version: 1.0.0
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  shared_preferences: ^2.5.3
+  font_awesome_flutter: ^10.9.1

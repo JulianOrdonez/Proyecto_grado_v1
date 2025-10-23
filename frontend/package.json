@@ -1,0 +1,17 @@
+{
+  "name": "backend-uceva",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    // No hay dependencias usadas actualmente
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  }
+}
+# Proyecto UCEVA - Control Energético IoT
+
+Estructura inicial de carpetas y archivos para backend y base de datos.
+
+<!-- Este archivo y carpeta pueden eliminarse, no afectan el funcionamiento de Flutter ni el backend. -->
