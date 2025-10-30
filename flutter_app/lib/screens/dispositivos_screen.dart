@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/dispositivo.dart';
 import '../services/dispositivo_service.dart';
+import '../services/auth_service.dart';
 
 class DispositivosScreen extends StatefulWidget {
   const DispositivosScreen({super.key});
@@ -20,6 +22,14 @@ class _DispositivosScreenState extends State<DispositivosScreen> {
   void initState() {
     super.initState();
     _fetchDispositivos();
+  }
+
+  Future<void> _logout() async {
+    await AuthService().logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 
   Future<void> _fetchDispositivos() async {
@@ -44,6 +54,13 @@ class _DispositivosScreenState extends State<DispositivosScreen> {
             Text('Dispositivos y consumo'),
           ],
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const FaIcon(FontAwesomeIcons.powerOff),
+            onPressed: _logout,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

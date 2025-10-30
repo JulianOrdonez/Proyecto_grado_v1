@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/dashboard_docente.dart';
@@ -30,8 +31,9 @@ class UcevaIotApp extends StatelessWidget {
     return MaterialApp(
       title: 'UCEVA IoT',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
+        '/': (context) => const StartGate(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home_admin': (context) => const HomeAdmin(),
@@ -57,6 +59,46 @@ class UcevaIotApp extends StatelessWidget {
         // Rutas por defecto
         return null;
       },
+    );
+  }
+}
+
+class StartGate extends StatefulWidget {
+  const StartGate({super.key});
+
+  @override
+  State<StartGate> createState() => _StartGateState();
+}
+
+class _StartGateState extends State<StartGate> {
+  @override
+  void initState() {
+    super.initState();
+    _decidirRuta();
+  }
+
+  Future<void> _decidirRuta() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rol = prefs.getString('rol');
+    if (rol == 'admin') {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/home_admin');
+    } else if (rol == 'docente') {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/home_docente');
+    } else if (rol == 'tecnico') {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/home_tecnico');
+    } else {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }

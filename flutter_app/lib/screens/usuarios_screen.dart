@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/usuario.dart';
 import '../services/usuario_service.dart';
+import '../services/auth_service.dart';
 
 class UsuariosScreen extends StatefulWidget {
   const UsuariosScreen({super.key});
@@ -28,6 +30,14 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
     _fetchUsuarios();
   }
 
+  Future<void> _logout() async {
+    await AuthService().logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  }
+
   Future<void> _fetchUsuarios() async {
     setState(() { _loading = true; _error = null; });
     try {
@@ -43,10 +53,12 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
     final ok = await _usuarioService.cambiarRol(usuarioId, nuevoRol);
     if (ok) {
       await _fetchUsuarios();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Rol actualizado correctamente')),
       );
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al actualizar rol')),
       );
@@ -54,13 +66,28 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
   }
 
   Future<void> _eliminarUsuario(int usuarioId) async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar eliminación'),
+        content: const Text('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Eliminar')),
+        ],
+      ),
+    );
+    if (confirmar != true) return;
+
     final ok = await _usuarioService.eliminarUsuario(usuarioId);
     if (ok) {
       await _fetchUsuarios();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario eliminado correctamente')),
       );
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al eliminar usuario')),
       );
@@ -82,15 +109,18 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
         _emailController.clear();
         _passwordController.clear();
         await _fetchUsuarios();
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Usuario creado correctamente')),
         );
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'] ?? 'Error al crear usuario')),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al crear usuario')),
       );
@@ -110,6 +140,13 @@ class _UsuariosScreenState extends State<UsuariosScreen> {
             Text('Gestión de usuarios y roles'),
           ],
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const FaIcon(FontAwesomeIcons.powerOff),
+            onPressed: _logout,
+          )
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

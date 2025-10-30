@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/reporte.dart';
 import '../services/reporte_service.dart';
+import '../services/auth_service.dart';
 
 class TodosReportesScreen extends StatefulWidget {
   const TodosReportesScreen({super.key});
@@ -20,6 +22,14 @@ class _TodosReportesScreenState extends State<TodosReportesScreen> {
   void initState() {
     super.initState();
     _fetchReportes();
+  }
+
+  Future<void> _logout() async {
+    await AuthService().logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 
   Future<void> _fetchReportes() async {
@@ -49,6 +59,13 @@ class _TodosReportesScreenState extends State<TodosReportesScreen> {
             Text('Todos los reportes'),
           ],
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const FaIcon(FontAwesomeIcons.powerOff),
+            onPressed: _logout,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

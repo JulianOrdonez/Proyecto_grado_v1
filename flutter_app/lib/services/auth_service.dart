@@ -27,4 +27,13 @@ class AuthService {
     );
     return jsonDecode(response.body);
   }
+
+  // Nuevo: logout
+  Future<void> logout() async {
+    try {
+      await http.post(Uri.parse('$baseUrl/logout'));
+    } catch (_) {
+      // Ignorar errores de red en logout para no bloquear la salida.
+    }
+  }
 }

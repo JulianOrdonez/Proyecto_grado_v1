@@ -12,12 +12,12 @@ class Usuario {
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) {
+    final rawRol = (json['rol'] ?? '').toString();
     return Usuario(
       id: json['id'],
       nombre: json['nombre'],
       email: json['email'],
-      rol: json['rol'],
+      rol: rawRol.trim().toLowerCase(),
     );
   }
 }
-

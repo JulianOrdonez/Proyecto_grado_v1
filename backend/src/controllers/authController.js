@@ -90,3 +90,13 @@ exports.eliminarUsuario = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar usuario', error });
   }
 };
+
+// Nuevo: Logout (placeholder sin manejo de token)
+exports.logout = async (req, res) => {
+  try {
+    // Si en el futuro se usan JWT o sesiones, aquí se invalidarían.
+    return res.status(200).json({ message: 'Logout correcto' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al cerrar sesión', error });
+  }
+};
